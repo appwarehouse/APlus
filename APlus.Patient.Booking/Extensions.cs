@@ -1,0 +1,126 @@
+﻿using APlus.DataAccess;
+using APlus.DataAccess.Models;
+using APlus.EmailClient.Models;
+using APlus.Patient.Booking.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace APlus.Patient.Booking
+{
+    public static class Extensions
+    {
+        public static Appointment AsAppointment(this PatientAppointmentDto dto, int patientId)
+        {
+            var startTime = DateAndTimeUtil.SetTime(dto.AppointmentDate, dto.Start);
+            var endTime = DateAndTimeUtil.SetTime(dto.AppointmentDate, dto.End);
+            return new Appointment
+            {
+                PatientId = patientId,
+                LocationId = dto.LocationId,
+                Start = startTime,
+                End = endTime,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "f4fd57fa-efbf-4fc9-90f6-7eb26fc3b862",
+                Deleted = false,
+                AppointmentStatusId = (int)AppointmentStatusEnum.Booked,
+                AppointmentNotes = dto.TreatmentType
+            };
+        }
+
+        public static PatientAppointmentDto AsPatientAppointmentDto(this Appointment appointment)
+        {
+            var ta = appointment.TherapistAppointments.FirstOrDefault();
+            return new PatientAppointmentDto
+            {
+                AppointmentId = appointment.Id,
+                Name = appointment.Patient.Name,
+                Surname = appointment.Patient.Surname,
+                LocationName = appointment.Location.LocationName,
+                LocationId = appointment.LocationId,
+                Start = appointment.Start.ToString(),
+                End = appointment.End.ToString(),
+                Gender = appointment.Patient.Gender,
+                AppointmentDate = appointment.Start,
+                DoB = appointment.Patient.Dob,
+                AppointmentStatus = ((AppointmentStatusEnum)appointment.AppointmentStatusId).ToString(),
+                IdNumber = appointment.Patient.Idnumber,
+                MobileNumber = appointment.Patient.Mobile,
+                PractitionerId = Convert.ToInt32(ta?.TherapistId),
+                PractitionerName = $"{ta?.Therapist.FirstName} {ta?.Therapist.Surname}",
+                PractitionerType = Convert.ToInt32(ta?.Therapist.TherapistTypeId),
+                Treatment = ta?.Therapist.TherapistType.TherapistTypeName,
+                TreatmentType = appointment.AppointmentNotes,
+                EmailAddress = appointment.Patient.Email?.ToString()
+            };
+        }
+
+        public static List<PatientAppointmentDto> AsListDto(this List<Appointment> appointments)
+        {
+            List<PatientAppointmentDto> listDto = new();
+            foreach (Appointment item in appointments)
+            {
+                listDto.Add(item.AsPatientAppointmentDto());
+            }
+            return listDto;
+        }
+
+        public static TherapistAppointment AsPractitionerAppointment(this PatientAppointmentDto dto, int patientId, int appointmentId)
+        {
+            var startTime = DateAndTimeUtil.SetTime(dto.AppointmentDate, dto.Start);
+            var endTime = DateAndTimeUtil.SetTime(dto.AppointmentDate, dto.End);
+            return
+                    new TherapistAppointment()
+                    {
+                        AppointmentId = appointmentId,
+                        TherapistId = dto.PractitionerId,
+                        Start = startTime,
+                        End = endTime,
+                        Duration = Convert.ToInt32((endTime - startTime).TotalMinutes)
+                    };
+        }
+
+        public static NewAppointmentNotificationModel ToNotification(this PatientAppointmentDto dto, Location location, Appointment appointment, string baseurl)
+        {
+            return new NewAppointmentNotificationModel
+            {
+                PatientName = dto.Name,
+                PatientSurname = dto.Surname,
+                BranchName = dto.LocationName,
+                TreatmentSubType = dto.TreatmentType,
+                TreatmentType = dto.Treatment,
+                PractitionerType = dto.PractitionerType.ToString(),
+                PractitionerName = dto.PractitionerName,
+                AppointmentDate = dto.AppointmentDate.ToString("dd MMM yyyy"),
+                AppointmentTime = dto.Start,
+                Address = location.Address,
+                Directions = location.AddressUrl,
+                DetailsUrl = $"{baseurl}/view-appointment-details/{appointment.Id}/{appointment.PatientId}",
+                CancelUrl = $"{baseurl}/cancel-patient-appointment/{appointment.Id}/{appointment.PatientId}"
+            };
+        }
+
+        public static DataAccess.Models.Patient ToPatient(this PatientAppointmentDto dto, Location location)
+        {
+            return new DataAccess.Models.Patient
+            {
+                Name = dto.Name,
+                Surname = dto.Surname,
+                LocationId = dto.LocationId,
+                Gender = string.IsNullOrEmpty(dto.Gender)?string.Empty: dto.Gender,
+                Dob = dto.DoB,
+                IsDbc = false,
+                Deleted = false,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "f4fd57fa-efbf-4fc9-90f6-7eb26fc3b862",
+                IsBlocked = false,
+                Idnumber = dto.IdType.ToLower() == "id" ? dto.IdNumber : dto.PassportNumber,
+                Mobile = dto.MobileNumber,
+                Email = dto.EmailAddress,
+                Title= string.Empty
+
+            };
+        }
+    }
+}

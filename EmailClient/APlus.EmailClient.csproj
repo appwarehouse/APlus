@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Templates\CancelPatientAppointmentNotificationTemplate.cshtml" />
+    <None Remove="Templates\NewPatientAppointmentNotificationTemplate.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\NewPatientAppointmentNotificationTemplate.cshtml" />
+    <EmbeddedResource Include="Templates\CancelPatientAppointmentNotificationTemplate.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
+    <PackageReference Include="RazorLight" Version="2.0.0-alpha3" />
+    <PackageReference Include="SendGrid" Version="9.28.1" />
+    <PackageReference Include="Sentry.AspNetCore" Version="3.24.0" />
+  </ItemGroup>
+
+</Project>
