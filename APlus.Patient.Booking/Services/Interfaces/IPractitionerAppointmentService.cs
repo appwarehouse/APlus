@@ -1,4 +1,6 @@
 ﻿using APlus.DataAccess.Models;
+using APlus.Patient.Booking.DTOs;
+using Itenso.TimePeriod;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,10 @@ namespace APlus.Patient.Booking.Interfaces
 
         public Task<List<TherapistAppointment>> GetAppointmentsByPractitionerIdAsync(int practitionerId);
 
-        public Task<List<TherapistAppointment>> GetAppointmentByLocationAndDateRangeAsync(int practitionerId, DateTime startDate, DateTime endDate);
+        public Task<List<TherapistAppointment>> GetAppointmentByLocationAndDateRangeAsync(int practitionerId, DateTime startDate, DateTime endDate, int locationId);
+
+        public Task<List<TimeRange>> GetPractitionerAvailableTimeslotsAsync(int practitionerId, DateTime startDate, DateTime endDate);
+
+        public Task<List<PractitionerAvailabilityDto>> GetTreatmentAvailabilityByLocation(int treatmentTypeId, DateTime startDate, int locationId);
     }
 }

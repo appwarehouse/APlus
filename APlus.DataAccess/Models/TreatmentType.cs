@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 
 namespace APlus.DataAccess.Models
 {
-    internal class TreatmentType
+    public class TreatmentType
     {
         public int Id { get; set; }
         public string TreatmentTypeName { get; set; }
         public bool? IsActive { get; set; }
         public int TherapistTypeId { get; set; }
+        public int AppointmentDuration { get; set; }
 
         [DefaultValue(true)]
         public Boolean IsPortalVisible { get; set; }
+
+        public virtual TherapistType TherapistType { get; set; }
     }
 }

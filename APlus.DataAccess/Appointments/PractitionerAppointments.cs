@@ -87,9 +87,49 @@ namespace APlus.DataAccess.Appointments
             return timeRanges;
         }
 
-        public async Task<IEnumerable<TimeRange>> PractitionerTimeSlots(DateTime startDate, DateTime endDate, Time firstSlotStartTime, Time lastSlotEndTime, int slotDuration)
+        public async Task<IEnumerable<TimeRange>> GetPractitionerTimeSlots(int practitionerId, DateTime startDate, Time firstSlotStartTime, Time lastSlotEndTime, int slotDuration)
         {
-            throw new NotImplementedException();
+            var existingSlots = await ListPractitionerAppointmentsTimeRangesByDateRange(startDate, startDate.AddDays(1), practitionerId);
+            List<TimeRange> timeRanges = new List<TimeRange>();
+            List<TimeRange> intersects = new List<TimeRange>();
+
+            var totalDuration = (lastSlotEndTime - firstSlotStartTime);
+            var slots = totalDuration.TotalMinutes / slotDuration;
+
+            var startDateTime = DateAndTimeUtil.SetTime(startDate, $"{firstSlotStartTime.Hour}:{firstSlotStartTime.Minute}");
+            var endOfDay = DateAndTimeUtil.SetTime(startDate, $"{lastSlotEndTime.Hour}:{lastSlotEndTime.Minute}");
+
+
+            for (int i = 0; i < slots; i++)
+            {
+                var startTimeSlot = startDateTime.AddMinutes(i * slotDuration);
+                
+                if (startTimeSlot < endOfDay && (startTimeSlot.AddMinutes(slotDuration)) <= endOfDay)
+                {
+                    timeRanges.Add(new TimeRange()
+                    {
+                        Start = startTimeSlot,
+                        End = startTimeSlot.AddMinutes(slotDuration),
+                        Duration = new TimeSpan(0, slotDuration, 0)
+
+                    });
+                }         
+            }
+             
+            existingSlots.ToList().ForEach(x =>
+            {
+                timeRanges.ForEach(y =>
+                {
+                    if (y.IntersectsWith(x))
+                    {
+                        intersects.Add(y);
+                    }
+                });
+            });
+
+
+            var availableSlots = timeRanges.Except(intersects);
+            return availableSlots.ToList();
         }
 
         public async Task<bool> UpdatePractitionerAppointmentAsync(TherapistAppointment appointment)

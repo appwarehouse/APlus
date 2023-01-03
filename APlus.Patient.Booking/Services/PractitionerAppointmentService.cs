@@ -6,16 +6,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Itenso.TimePeriod;
+using APlus.Patient.Booking.DTOs;
+using APlus.DataAccess.Interfaces;
 
 namespace APlus.Patient.Booking.Services
 {
     public class PractitionerAppointmentService : IPractitionerAppointmentService
     {
         private readonly IPractitionerAppointments _practitionerAppointments;
+        private readonly IPractitioner _practitioner;
+        private readonly ITreatmentTypes _treatmentTypes;
 
-        public PractitionerAppointmentService(IPractitionerAppointments practitionerAppointments)
+
+        public PractitionerAppointmentService(IPractitionerAppointments practitionerAppointments, IPractitioner practitioner, ITreatmentTypes treatmentTypes)
         {
             _practitionerAppointments = practitionerAppointments;
+            _practitioner= practitioner;
+            _treatmentTypes= treatmentTypes;
         }
 
         public async Task<List<TherapistAppointment>> CreatePractitionerAppointmentAsync(List<TherapistAppointment> newAppointments)
@@ -30,7 +37,7 @@ namespace APlus.Patient.Booking.Services
             return newPractitionerAppointment;
         }
 
-        public async Task<List<TherapistAppointment>> GetAppointmentByLocationAndDateRangeAsync(int practitionerId, DateTime startDate, DateTime endDate)
+        public async Task<List<TherapistAppointment>> GetAppointmentByLocationAndDateRangeAsync(int practitionerId, DateTime startDate, DateTime endDate, int locationId)
         {
             throw new NotImplementedException();
         }
@@ -50,15 +57,54 @@ namespace APlus.Patient.Booking.Services
             throw new NotImplementedException();
         }
 
+        public async Task<List<TimeRange>> GetPractitionerAvailableTimeslotsAsync(int practitionerId, DateTime startDate, DateTime endDate)
+        {
+            var retVal = await _practitionerAppointments.GetPractitionerTimeSlots(practitionerId, startDate, new Time(6, 30, 0, 0), new Time(16, 0,0,0), 30);
+
+            return retVal.ToList();
+        }
+
+        public async Task<List<PractitionerAvailabilityDto>> GetTreatmentAvailabilityByLocation(int treatmentTypeId, DateTime startDate, int locationId)
+        {
+            //get practitioners for this treatment type at this location
+            var practitioners = await _practitioner.GetPractitionersByLocationAndTreatmentType(locationId, treatmentTypeId);
+            var treatmentType = await _treatmentTypes.GetTreatmentType(treatmentTypeId);
+
+            List<PractitionerAvailabilityDto> availabilityList = new List<PractitionerAvailabilityDto>();
+
+            foreach (var item in practitioners)
+            {
+                //get availability
+                var availability = await _practitionerAppointments
+                                    .GetPractitionerTimeSlots(item.Id, 
+                                                                startDate, 
+                                                                new Time(7, 0, 0, 0), 
+                                                                new Time(16, 0, 0, 0), 
+                                                                treatmentType.AppointmentDuration);
+
+
+                if (availability.Any())
+                {
+                    availabilityList.Add(new PractitionerAvailabilityDto()
+                    {
+                        practitionerId = item.Id,
+                        parctitionerTypeId = item.TherapistTypeId,
+                        practitionerName = $"{item.FirstName} {item.Surname}",
+                        practitionerType = item.TherapistType.TherapistTypeName,
+                        availableSlots = availability.ToAvaiableSlotList().ToArray()
+                    });
+                }
+
+            }
+            
+            return availabilityList;
+
+        }
+
         public async Task<bool> UpdatePractitionerAppointmentAsync(TherapistAppointment appointment)
         {
             var updated = await _practitionerAppointments.UpdatePractitionerAppointmentAsync(appointment);
             return updated;
-        }
-
-        public Task<bool> UpdatePractitionerAppointmentAsync(int therapostAppointmentId, TherapistAppointment appointment)
-        {
-            throw new NotImplementedException();
         }
     }
 }

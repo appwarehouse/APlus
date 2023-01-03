@@ -1,6 +1,5 @@
-﻿using APlus.DataAccess.Locations;
+﻿using APlus.DataAccess.Interfaces;
 using APlus.DataAccess.Models;
-using APlus.DataAccess.PatientLeads;
 using APlus.Patient.Booking.Interfaces;
 using System;
 using System.Collections.Generic;

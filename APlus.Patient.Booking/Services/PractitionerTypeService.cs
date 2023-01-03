@@ -1,4 +1,5 @@
-﻿using APlus.DataAccess.Models;
+﻿using APlus.DataAccess.Interfaces;
+using APlus.DataAccess.Models;
 using APlus.DataAccess.Practitioners;
 using APlus.Patient.Booking.Interfaces;
 using System;
@@ -18,7 +19,7 @@ namespace APlus.Patient.Booking.Services
         }
         public async Task<List<TherapistType>> GetPractitionerTypes()
         {
-            var patientPortalPractitionerTypes = await _practitionerTypes.ListPractitionerType();
+            var patientPortalPractitionerTypes = await _practitionerTypes.GetPractitionerTypes();
             return patientPortalPractitionerTypes.Where(x => x.IsPortalVisible = true).ToList();
         }
     }

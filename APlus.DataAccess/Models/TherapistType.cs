@@ -19,11 +19,13 @@ namespace APlus.DataAccess.Models
         public bool? IsActive { get; set; }
         public int MaxConcurrantAppointments { get; set; }
         public string ShortName { get; set; }
+        public int TreatmentTypeId { get; set; }
 
         [DefaultValue(true)]
         public Boolean IsPortalVisible { get; set; }
 
         public virtual ICollection<ProcedureCode> ProcedureCodes { get; set; }
         public virtual ICollection<Therapist> Therapists { get; set; }
+        public virtual ICollection<TreatmentType> TreatmentType { get; set; }
     }
 }

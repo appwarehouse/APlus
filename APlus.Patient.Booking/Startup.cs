@@ -92,7 +92,7 @@ namespace APlus.Patient.Booking
             app.UseRouting();
             app.UseCors("Default");
             app.UseAuthorization();
-            app.UseSentryTracing();
+            //app.UseSentryTracing();
 
             app.UseEndpoints(endpoints =>
             {

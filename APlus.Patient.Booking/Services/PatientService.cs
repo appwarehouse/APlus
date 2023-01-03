@@ -1,4 +1,4 @@
-﻿using APlus.DataAccess.Patients;
+﻿using APlus.DataAccess.Interfaces;
 using APlus.Patient.Booking.Interfaces;
 using System;
 using System.Collections.Generic;

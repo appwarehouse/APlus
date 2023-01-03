@@ -26,6 +26,6 @@ namespace APlus.DataAccess.Appointments
 
         public Task<IEnumerable<TimeRange>> ListPractitionerAppointmentsTimeRangesByDateRange(DateTime startDate, DateTime endDate, int practitionerId);
 
-        public Task<IEnumerable<TimeRange>> PractitionerTimeSlots(DateTime startDate, DateTime endDate, Time firstSlotStartTime, Time lastSlotEndTime, int slotDuration);
+        public Task<IEnumerable<TimeRange>> GetPractitionerTimeSlots(int practitionerId, DateTime startDate, Time firstSlotStartTime, Time lastSlotEndTime, int slotDuration);
     }
 }

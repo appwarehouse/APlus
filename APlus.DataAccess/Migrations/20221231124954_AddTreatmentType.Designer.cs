@@ -4,14 +4,16 @@ using APlus.DataAccess.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APlus.DataAccess.Migrations
 {
     [DbContext(typeof(PatientContext))]
-    partial class PatientContextModelSnapshot : ModelSnapshot
+    [Migration("20221231124954_AddTreatmentType")]
+    partial class AddTreatmentType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2338,9 +2340,6 @@ namespace APlus.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("TreatmentTypeId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("TherapistType");
@@ -2375,23 +2374,16 @@ namespace APlus.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool?>("IsActive")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("((1))");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsPortalVisible")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("((1))");
+                        .HasColumnType("bit");
 
                     b.Property<int>("TherapistTypeId")
                         .HasColumnType("int");
 
                     b.Property<string>("TreatmentTypeName")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -3085,7 +3077,7 @@ namespace APlus.DataAccess.Migrations
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
                         .WithMany("TreatmentType")
                         .HasForeignKey("TherapistTypeId")
-                        .HasConstraintName("FK_TherapistType_TreatmentType")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TherapistType");

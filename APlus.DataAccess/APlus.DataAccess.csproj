@@ -28,7 +28,6 @@
   <ItemGroup>
     <Folder Include="DTOs\" />
     <Folder Include="MedicalAid\" />
-    <Folder Include="TreatmentTypes\" />
     <Folder Include="Notifications\" />
   </ItemGroup>
 

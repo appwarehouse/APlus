@@ -2,6 +2,7 @@
 using APlus.DataAccess.Models;
 using APlus.EmailClient.Models;
 using APlus.Patient.Booking.DTOs;
+using Itenso.TimePeriod;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,6 +122,26 @@ namespace APlus.Patient.Booking
                 Title= string.Empty
 
             };
+        }
+
+        public static AvailableSlotDto ToAvaiableSlot(this TimeRange slotTimeRange)
+        {
+            return new AvailableSlotDto
+            {
+                start = slotTimeRange.Start.ToString("HH:mm"),
+                end = slotTimeRange.End.ToString("HH:mm")
+            };
+        }
+
+        public static IEnumerable<AvailableSlotDto> ToAvaiableSlotList(this IEnumerable<TimeRange> slotTimeRange)
+        {
+            var list = new List<AvailableSlotDto>();
+            slotTimeRange.ToList().ForEach(x =>
+            {
+                list.Add(x.ToAvaiableSlot());
+
+            });
+            return list;
         }
     }
 }

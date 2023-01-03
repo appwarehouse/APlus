@@ -78,6 +78,7 @@ namespace APlus.DataAccess.Database
         public virtual DbSet<VwBlockedPatient> VwBlockedPatients { get; set; }
         public virtual DbSet<VwDocAppointment> VwDocAppointments { get; set; }
         public virtual DbSet<VwPhysioAppointment> VwPhysioAppointments { get; set; }
+        public virtual DbSet<TreatmentType> TreatmentType { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -1470,6 +1471,36 @@ namespace APlus.DataAccess.Database
                 entity.Property(e => e.Payload)
                     .IsRequired()
                     .HasColumnType("text");
+            });
+
+            modelBuilder.Entity<TreatmentType>(entity =>
+            {
+                entity.ToTable("TreatmentType");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.TreatmentTypeName)
+                     .IsRequired()
+                     .HasMaxLength(250);
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
+                entity.Property(e => e.AppointmentDuration)
+                     .IsRequired();
+
+                entity.Property(e => e.IsPortalVisible)
+                     .IsRequired()
+                     .HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.TherapistType)
+                    .WithMany(p => p.TreatmentType)
+                    .HasForeignKey(d => d.TherapistTypeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TherapistType_TreatmentType");
+
+
             });
 
             modelBuilder.Entity<VwBioAppointment>(entity =>

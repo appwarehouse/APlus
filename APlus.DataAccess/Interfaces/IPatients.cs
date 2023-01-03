@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace APlus.DataAccess.Patients
+namespace APlus.DataAccess.Interfaces
 {
     public interface IPatients
     {
