@@ -1,6 +1,7 @@
 ﻿using APlus.DataAccess.Database;
 using APlus.DataAccess.Interfaces;
 using APlus.DataAccess.Models;
+using APlus.DataAccess.PatientTreatmentProgramme;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,16 +14,25 @@ namespace APlus.DataAccess.Patients
     internal class Patients : IPatients
     {
         private readonly PatientContext _context;
+        private readonly IPatientTreatmentProgrammes _patientTreatmentProgrammes;
 
-        public Patients(PatientContext context)
+        public Patients(PatientContext context, IPatientTreatmentProgrammes patientTreatmentProgrammes)
         {
             _context = context;
+            _patientTreatmentProgrammes = patientTreatmentProgrammes;
         }
 
-        public async Task<Patient> CreatePatientAsync(Patient patientRecord)
+        public async Task<Patient> CreatePatientAsync(Patient patientRecord, int[] programmes = null)
         {
+            //create patient
             await _context.Patients.AddAsync(patientRecord);
             await _context.SaveChangesAsync();
+
+
+            //link patient to a programme 
+            programmes.ToList().ForEach(async programme => { await _patientTreatmentProgrammes.EnrollPatientInPrograme(programme, patientRecord.Id); });
+            
+            
             return patientRecord;
         }
 
@@ -55,6 +65,11 @@ namespace APlus.DataAccess.Patients
         {
             var patients = await _context.Patients.SingleOrDefaultAsync(x => x.Id == patientId);
             return patients;
+        }
+
+        public Task<PatientProgramme> LinkPatientToProgrammeAsync(Patient patientRecord, Programme programme)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> UpdatePatientAsync(Patient patientRecord)

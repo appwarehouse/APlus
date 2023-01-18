@@ -96,5 +96,9 @@ namespace APlus.Patient.Booking.DTOs
         [JsonProperty("emailAddress")]
         [JsonPropertyName("emailAddress")]
         public string EmailAddress { get; set; }
+
+        [JsonProperty("programme")]
+        [JsonPropertyName("programme")]
+        public int Programme { get; set; }
     }
 }

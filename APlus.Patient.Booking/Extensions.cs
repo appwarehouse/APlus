@@ -23,10 +23,11 @@ namespace APlus.Patient.Booking
                 Start = startTime,
                 End = endTime,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "f4fd57fa-efbf-4fc9-90f6-7eb26fc3b862",
+                CreatedBy = "5c4e4edb-5008-4723-b293-4ac67738de46",
                 Deleted = false,
                 AppointmentStatusId = (int)AppointmentStatusEnum.Booked,
-                AppointmentNotes = dto.TreatmentType
+                AppointmentNotes = dto.TreatmentType,
+                ProgrammeId = dto.Programme
             };
         }
 
@@ -114,7 +115,7 @@ namespace APlus.Patient.Booking
                 IsDbc = false,
                 Deleted = false,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "f4fd57fa-efbf-4fc9-90f6-7eb26fc3b862",
+                CreatedBy = "5c4e4edb-5008-4723-b293-4ac67738de46",
                 IsBlocked = false,
                 Idnumber = dto.IdType.ToLower() == "id" ? dto.IdNumber : dto.PassportNumber,
                 Mobile = dto.MobileNumber,

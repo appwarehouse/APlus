@@ -28,7 +28,7 @@ namespace APlus.Patient.Booking.Controllers
         public async Task<ActionResult<List<Location>>> GetBranches()
         {
             var listLocations = await _branchesService.GetActiveBranches();
-            return listLocations;
+            return listLocations.OrderBy(l=> l.LocationName).ToList();
         }
 
     }
