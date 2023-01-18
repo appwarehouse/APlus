@@ -57,9 +57,10 @@ namespace APlus.Patient.Booking.Services
             throw new NotImplementedException();
         }
 
-        public async Task<List<TimeRange>> GetPractitionerAvailableTimeslotsAsync(int practitionerId, DateTime startDate, DateTime endDate)
+        public async Task<List<TimeRange>> GetPractitionerAvailableTimeslotsAsync(int practitionerId, DateTime startDate, DateTime endDate, int slotDuration)
         {
-            var retVal = await _practitionerAppointments.GetPractitionerTimeSlots(practitionerId, startDate, new Time(6, 30, 0, 0), new Time(16, 0,0,0), 30);
+            //ToDo: start and end times from config
+            var retVal = await _practitionerAppointments.GetPractitionerTimeSlots(practitionerId, startDate, new Time(7, 0, 0, 0), new Time(16, 0,0,0), slotDuration);
 
             return retVal.ToList();
         }
@@ -74,6 +75,7 @@ namespace APlus.Patient.Booking.Services
 
             foreach (var item in practitioners)
             {
+                //ToDo: start and end times from config
                 //get availability
                 var availability = await _practitionerAppointments
                                     .GetPractitionerTimeSlots(item.Id, 

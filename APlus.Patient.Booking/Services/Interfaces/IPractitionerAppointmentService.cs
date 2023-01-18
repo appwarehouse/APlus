@@ -24,7 +24,7 @@ namespace APlus.Patient.Booking.Interfaces
 
         public Task<List<TherapistAppointment>> GetAppointmentByLocationAndDateRangeAsync(int practitionerId, DateTime startDate, DateTime endDate, int locationId);
 
-        public Task<List<TimeRange>> GetPractitionerAvailableTimeslotsAsync(int practitionerId, DateTime startDate, DateTime endDate);
+        public Task<List<TimeRange>> GetPractitionerAvailableTimeslotsAsync(int practitionerId, DateTime startDate, DateTime endDate, int slotDuration);
 
         public Task<List<PractitionerAvailabilityDto>> GetTreatmentAvailabilityByLocation(int treatmentTypeId, DateTime startDate, int locationId);
     }

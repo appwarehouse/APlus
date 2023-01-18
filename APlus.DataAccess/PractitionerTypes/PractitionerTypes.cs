@@ -23,7 +23,7 @@ namespace APlus.DataAccess.PractitionerTypes
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<TherapistType>> GetPractitionerTypes(bool listOnlyActive)
+        public async Task<IEnumerable<TherapistType>> GetPractitionerTypes(bool listOnlyActive = true)
         {
             var types = await _context.TherapistTypes.ToListAsync();
 
@@ -31,7 +31,7 @@ namespace APlus.DataAccess.PractitionerTypes
             return types.Where(q => q.IsActive == true).ToList();
         }
 
-        public async Task<IEnumerable<TherapistType>> GetPractitionerTypesByTreatmentType(int treatmentTypeId, bool listOnlyActive)
+        public async Task<IEnumerable<TherapistType>> GetPractitionerTypesByTreatmentType(int treatmentTypeId, bool listOnlyActive = true)
         {
             var types = await _context.TherapistTypes.Where(q => q.TreatmentTypeId == treatmentTypeId).ToListAsync();
 

@@ -23,10 +23,13 @@ namespace APlus.Patient.Booking.Controllers
         }
 
         // GET api/<PractitionersController>/5
+        //ToDo: Deprecated?
         [HttpGet("timeslots/{practitionerId}/{startDate}/{endDate}")]
         public async Task<ActionResult<List<TimeRange>>> GetPractitionerTimeSlots(int practitionerId, DateTime startDate, DateTime endDate)
         {
-           var timeSlots = await  _practitionerAppointmentService.GetPractitionerAvailableTimeslotsAsync(practitionerId, startDate, endDate);
+            //ToDo: get slot duration from Treatment type
+            int slotDuration = 30;
+           var timeSlots = await  _practitionerAppointmentService.GetPractitionerAvailableTimeslotsAsync(practitionerId, startDate, endDate, slotDuration);
            return timeSlots.ToList();
 
         }
