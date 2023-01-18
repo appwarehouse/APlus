@@ -1353,6 +1353,9 @@ namespace APlus.DataAccess.Database
                     .WithMany(p => p.Therapists)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_Therapist_AspNetUsers");
+
+                entity.Property(e => e.ImageUrl)
+                    .HasMaxLength(250);
             });
 
             modelBuilder.Entity<TherapistAppointment>(entity =>
