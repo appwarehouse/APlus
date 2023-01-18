@@ -21,15 +21,9 @@ namespace APlus.Patient.Booking.Controllers
         {
             _practitionerAppointmentService = practitionerAppointmentService;
         }
-        // GET: api/<PractitionersController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         // GET api/<PractitionersController>/5
-        [HttpGet("/timeslots/{practitionerId}/{startDate}/{endDate}")]
+        [HttpGet("timeslots/{practitionerId}/{startDate}/{endDate}")]
         public async Task<ActionResult<List<TimeRange>>> GetPractitionerTimeSlots(int practitionerId, DateTime startDate, DateTime endDate)
         {
            var timeSlots = await  _practitionerAppointmentService.GetPractitionerAvailableTimeslotsAsync(practitionerId, startDate, endDate);
@@ -38,7 +32,7 @@ namespace APlus.Patient.Booking.Controllers
         }
 
         // GET api/<PractitionersController>/5
-        [HttpGet("/availability/{treatmentTypeId}/{startDate}/{locationId}")]
+        [HttpGet("availability/{treatmentTypeId}/{startDate}/{locationId}")]
         public async Task<ActionResult<List<PractitionerAvailabilityDto>>> GetPractitionerAvailability(int treatmentTypeId, DateTime startDate, int locationId)
         {
             //get all practitioner Ids in this Treatment Type Id
@@ -46,22 +40,5 @@ namespace APlus.Patient.Booking.Controllers
             return timeSlots.ToList();
         }
 
-        // POST api/<PractitionersController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<PractitionersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<PractitionersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }

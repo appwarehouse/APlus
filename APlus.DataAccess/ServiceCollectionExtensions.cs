@@ -3,7 +3,10 @@ using APlus.DataAccess.Database;
 using APlus.DataAccess.Interfaces;
 using APlus.DataAccess.Locations;
 using APlus.DataAccess.PatientLeads;
+using APlus.DataAccess.PatientTreatmentProgramme;
 using APlus.DataAccess.Practitioners;
+using APlus.DataAccess.Programmes;
+using APlus.DataAccess.Schedule;
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -22,6 +25,9 @@ namespace APlus.DataAccess
             services.AddScoped<IPatients, Patients.Patients>();
             services.AddScoped<ITreatmentTypes, TreatmentTypes.TreatmentTypes>();
             services.AddScoped<IPractitioner, Practitioner>();
+            services.AddScoped<IPublicHolidays, PublicHoliday>();
+            services.AddScoped<IPatientTreatmentProgrammes, PatientTreatmentProgrammes>();
+            services.AddScoped<ITreatmentProgramme, TreatmentProgramme>();
 
         }
     }

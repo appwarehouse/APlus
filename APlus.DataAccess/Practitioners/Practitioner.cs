@@ -67,16 +67,15 @@ namespace APlus.DataAccess.Practitioners
 
         public async Task<IEnumerable<Therapist>> GetPractitionersByLocationAndTreatmentType(int locationId, int treatmentTypeId, bool listOnlyActive = true)
         {
-            var locations = await _context.TherapistLocations.Where(q => q.LocationId == locationId).ToListAsync();
-            var practitioners = await _context.Therapists.Where(p => p.TherapistTypeId == treatmentTypeId)
-                                                            .Include(t => t.TherapistType)
-                                                            .ToListAsync();
+            var practitioners = await (from a in _context.Therapists
+                                 join t in _context.TherapistTypes on a.TherapistTypeId equals t.Id
+                                 join r in _context.TreatmentType on t.Id equals r.TherapistTypeId
+                                 join l in _context.TherapistLocations on a.Id equals l.TherapistId
+                                 where r.Id == treatmentTypeId && l.LocationId == locationId select a).Include(t => t.TherapistType).ToListAsync();
+                
+            if (!listOnlyActive) return practitioners;
 
-            var filteredPractitioiners = practitioners.Where(p => locations.Any(l => l.TherapistId == p.Id)).ToList();
-
-            if (!listOnlyActive) return filteredPractitioiners;
-
-            return filteredPractitioiners.Where(q => q.IsActive == true).ToList();
+            return practitioners.Where(q => q.IsActive == true).ToList();
         }
 
         public async Task<IEnumerable<Therapist>> GetPractitionersByPractitionerTypeId(int practitionerTypeId, bool listOnlyActive = true)
@@ -88,8 +87,13 @@ namespace APlus.DataAccess.Practitioners
         }
 
         public async Task<IEnumerable<Therapist>> GetPractitionersByTreatmentType(int treatmentTypeId, bool listOnlyActive = true)
-        {            
-            var practitioners = await _context.Therapists.Where(p => p.TherapistType.TreatmentTypeId == treatmentTypeId).ToListAsync();
+        {
+            var practitioners = await (from a in _context.Therapists
+                                       join t in _context.TherapistTypes on a.TherapistTypeId equals t.Id
+                                       join r in _context.TreatmentType on t.Id equals r.TherapistTypeId
+                                       where r.Id == treatmentTypeId 
+                                       select a).Include(t => t.TherapistType).ToListAsync();
+
             if (!listOnlyActive) return practitioners;
 
             return practitioners.Where(q=> q.IsActive == true).ToList();

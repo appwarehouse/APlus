@@ -9,7 +9,8 @@ namespace APlus.DataAccess.Interfaces
 {
     public interface IPatients
     {
-        public Task<Patient> CreatePatientAsync(Patient patientRecord);
+        public Task<Patient> CreatePatientAsync(Patient patientRecord, int[] programmes = null);
+        public Task<PatientProgramme> LinkPatientToProgrammeAsync(Patient patientRecord, Programme programme);
 
         public Task<bool> UpdatePatientAsync(Patient patientRecord);
 

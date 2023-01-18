@@ -3,8 +3,10 @@ using APlus.DataAccess.Models;
 using Itenso.TimePeriod;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -89,14 +91,19 @@ namespace APlus.DataAccess.Appointments
 
         public async Task<IEnumerable<TimeRange>> GetPractitionerTimeSlots(int practitionerId, DateTime startDate, Time firstSlotStartTime, Time lastSlotEndTime, int slotDuration)
         {
-            var existingSlots = await ListPractitionerAppointmentsTimeRangesByDateRange(startDate, startDate.AddDays(1), practitionerId);
+            
+            var existingSlots = await ListPractitionerAppointmentsTimeRangesByDateRange(startDate, startDate, practitionerId);
+            var breaks = await GetPractitionerBreaks(practitionerId, startDate);
             List<TimeRange> timeRanges = new List<TimeRange>();
             List<TimeRange> intersects = new List<TimeRange>();
 
             var totalDuration = (lastSlotEndTime - firstSlotStartTime);
             var slots = totalDuration.TotalMinutes / slotDuration;
 
-            var startDateTime = DateAndTimeUtil.SetTime(startDate, $"{firstSlotStartTime.Hour}:{firstSlotStartTime.Minute}");
+            var Now = DateTime.Now;          
+
+            var todayMin = DateAndTimeUtil.SetTime(Now, $"{Now.Hour + (Now.Minute <= 30 ?  1 : 2)}:{(Now.Minute <= 30 ? 30 : 0)}");
+            var startDateTime = startDate.Date == DateTime.Today ? todayMin : DateAndTimeUtil.SetTime(startDate, $"{firstSlotStartTime.Hour}:{firstSlotStartTime.Minute}");
             var endOfDay = DateAndTimeUtil.SetTime(startDate, $"{lastSlotEndTime.Hour}:{lastSlotEndTime.Minute}");
 
 
@@ -113,23 +120,13 @@ namespace APlus.DataAccess.Appointments
                         Duration = new TimeSpan(0, slotDuration, 0)
 
                     });
-                }         
+                }else
+                { 
+                break;}
             }
-             
-            existingSlots.ToList().ForEach(x =>
-            {
-                timeRanges.ForEach(y =>
-                {
-                    if (y.IntersectsWith(x))
-                    {
-                        intersects.Add(y);
-                    }
-                });
-            });
 
-
-            var availableSlots = timeRanges.Except(intersects);
-            return availableSlots.ToList();
+            return timeRanges.Where(x => !existingSlots.Any(y => y.HasInside(x)))
+                                    .Where(x => !breaks.Any(y => y.HasInside(x)));
         }
 
         public async Task<bool> UpdatePractitionerAppointmentAsync(TherapistAppointment appointment)
@@ -154,6 +151,18 @@ namespace APlus.DataAccess.Appointments
             {
                 throw new Exception($"Could not update thereapist appointments {ex.Message}");
             }
+        }
+
+        public async Task<IEnumerable<TimeRange>> GetPractitionerBreaks(int practitionerId, DateTime dayOfBreaks, DateTime? endOfBreak = null)
+        {
+            endOfBreak = endOfBreak ?? dayOfBreaks.AddDays(1);
+
+            var breaks = await _context.SchedTherapistBreaks.Where(b => (b.BreakStart >= dayOfBreaks && b.BreakStart <= endOfBreak)
+                                                            || (b.BreakEnd <= dayOfBreaks && b.BreakEnd >= endOfBreak))
+                                                            .ToListAsync();
+
+            var ranges = breaks.AsTimeRangeList();
+            return ranges;
         }
     }
 }

@@ -21,9 +21,9 @@ namespace APlus.Patient.Booking.Services
             throw new NotImplementedException();
         }
 
-        public Task<DataAccess.Models.Patient> CreatePatientRecordAsync(DataAccess.Models.Patient patient)
+        public Task<DataAccess.Models.Patient> CreatePatientRecordAsync(DataAccess.Models.Patient patient, int[] patientProgrammes = null)
         {
-            var newPatient = _patient.CreatePatientAsync(patient);
+            var newPatient = _patient.CreatePatientAsync(patient, patientProgrammes);
             return newPatient;
         }
 

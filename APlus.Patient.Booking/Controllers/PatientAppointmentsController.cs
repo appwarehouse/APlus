@@ -85,6 +85,8 @@ namespace APlus.Patient.Booking.Controllers
             {
                 var url = HttpContext.Request.Headers["origin"];
                 var branch = await _branchService.GetBranch(appointmentDto.LocationId);
+                int[] programmes = new int[1];
+                programmes[0] = appointmentDto.Programme;
                 //check if patient exists
                 DataAccess.Models.Patient patient = await _patientService.FindPatientByIdNumber(appointmentDto.IdType.ToLower() == "id" ?
                     appointmentDto.IdNumber :
@@ -94,7 +96,7 @@ namespace APlus.Patient.Booking.Controllers
                 {
                     //create new paient record
                     patient = appointmentDto.ToPatient(branch);
-                    _ = await _patientService.CreatePatientRecordAsync(patient);
+                    _ = await _patientService.CreatePatientRecordAsync(patient, programmes);
                 }
 
                 var appointment = appointmentDto.AsAppointment(patient.Id);
@@ -116,6 +118,10 @@ namespace APlus.Patient.Booking.Controllers
                 }
 
                 return Ok(newAppointment.Id);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {

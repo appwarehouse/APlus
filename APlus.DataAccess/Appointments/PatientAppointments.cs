@@ -1,5 +1,6 @@
 ﻿using APlus.DataAccess.Database;
 using APlus.DataAccess.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -26,16 +27,22 @@ namespace APlus.DataAccess.Appointments
                 var cancelled = await _context.Appointments.SingleOrDefaultAsync(x => x.Id == appointmentId);
                 if (cancelled != null)
                 {
-                    cancelled.AppointmentStatusId = (int)AppointmentStatusEnum.Cancelled;
-                    await _context.SaveChangesAsync();
-                    return true;
+                    //check if appointment is within an hour
+                    if ((cancelled.Start - DateTime.Now).TotalMinutes > 60)
+                    {
+                        cancelled.AppointmentStatusId = (int)AppointmentStatusEnum.Cancelled;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    throw new Exception("Appointment cannot be cancelled an hour or less before the scheduled start time");
+                    
                 }
                 return false;
             }
             catch (Exception)
             {
                 //ToDo: Logger
-                return false;
+                throw;
             }
         }
 
@@ -43,9 +50,18 @@ namespace APlus.DataAccess.Appointments
         {
             try
             {
+                //check if patient has appointment todat alreadt that is booked 
+                if (_context.Appointments.Select(x => x.PatientId == appointment.PatientId && x.Start.Date == appointment.Start.Date && x.AppointmentStatusId == 1).Any())
+                {
+                    throw new InvalidOperationException($"Appointment not booked. Patient has active appointment on {appointment.Start.ToString("dd MMMM yyyy")}");
+                }
                 await _context.Appointments.AddAsync(appointment);
                 await _context.SaveChangesAsync();
                 return appointment;
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw ex;
             }
             catch (Exception ex)
             {

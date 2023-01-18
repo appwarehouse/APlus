@@ -24,6 +24,7 @@ using Newtonsoft;
 using System.Text.Json;
 using APlus.EmailClient.Services;
 using APlus.EmailClient;
+using APlus.Patient.Booking.Services.Interfaces;
 
 namespace APlus.Patient.Booking
 {
@@ -64,6 +65,9 @@ namespace APlus.Patient.Booking
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IAppointmentLeadsService, AppointmentLeadsService>();
             services.AddScoped<IPatientService, PatientService>();
+            services.AddScoped<IPublicHolidayService, PublicHolidayService>();
+            services.AddScoped<ITreatmentTypesService, TreatmentTypeService>();
+            services.AddScoped<IPractitionerTypeService, PractitionerTypeService>();
 
             var emailSettings = Configuration.GetSection("EmailSettings");
             services.Configure<EmailSettings>(emailSettings);
