@@ -32,6 +32,7 @@ namespace APlus.DataAccess.Models
         public DateTime? PracticeExpiryDate { get; set; }
         public string LunchTime { get; set; }
         public int? LunchTimeDuration { get; set; }
+        public string ImageUrl { get; set; }
 
         public virtual TherapistType TherapistType { get; set; }
         public virtual AspNetUser User { get; set; }

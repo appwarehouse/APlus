@@ -88,11 +88,12 @@ namespace APlus.Patient.Booking.Services
                     availabilityList.Add(new PractitionerAvailabilityDto()
                     {
                         practitionerId = item.Id,
-                        parctitionerTypeId = item.TherapistTypeId,
+                        practitionerTypeId = item.TherapistTypeId,
                         practitionerName = $"{item.FirstName} {item.Surname}",
                         practitionerType = item.TherapistType.TherapistTypeName,
+                        practitionerImageUrl = item.ImageUrl,
                         availableSlots = availability.ToAvaiableSlotList().ToArray()
-                    });
+                    });;
                 }
 
             }
