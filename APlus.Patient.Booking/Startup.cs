@@ -25,6 +25,10 @@ using System.Text.Json;
 using APlus.EmailClient.Services;
 using APlus.EmailClient;
 using APlus.Patient.Booking.Services.Interfaces;
+using APlus.Patient.Booking.Settings;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace APlus.Patient.Booking
 {
@@ -40,6 +44,9 @@ namespace APlus.Patient.Booking
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Configuration from AppSettings
+            services.Configure<JWT>(Configuration.GetSection("JWT"));
+
             //CORS
             services.AddCors(options =>
             {
@@ -73,6 +80,31 @@ namespace APlus.Patient.Booking
             services.Configure<EmailSettings>(emailSettings);
             services.AddTransient<IEmailClientSender, EmailClientSender>();
 
+            //Adding Athentication - JWT
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+
+                .AddJwtBearer(o =>
+                {
+                    o.RequireHttpsMetadata = false;
+                    o.SaveToken = false;
+                    o.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+
+                        ValidIssuer = Configuration["JWT:Issuer"],
+                        ValidAudience = Configuration["JWT:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                    };
+                });
+
             services.AddControllers();
 
             services.AddSwaggerGen(c =>
@@ -95,6 +127,7 @@ namespace APlus.Patient.Booking
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors("Default");
+            app.UseAuthentication();
             app.UseAuthorization();
             //app.UseSentryTracing();
 

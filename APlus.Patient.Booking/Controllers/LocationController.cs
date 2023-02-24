@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using APlus.DataAccess;
 using APlus.DataAccess.Locations;
 using APlus.Patient.Booking.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,6 +25,7 @@ namespace APlus.Patient.Booking.Controllers
         }
 
         // GET: api/<LocationController>
+        //[Authorize]
         [HttpGet("branches/list")]
         public async Task<ActionResult<List<Location>>> GetBranches()
         {
