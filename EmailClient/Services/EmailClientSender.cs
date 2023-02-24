@@ -25,12 +25,12 @@ namespace APlus.EmailClient.Services
             try
             {
                 string template = GetTemplate(emailType);
-                NewAppointmentNotificationModel newAppointmentModel = model as NewAppointmentNotificationModel;
+                //NewAppointmentNotificationModel newAppointmentModel = model as NewAppointmentNotificationModel;
 
                 RazorParser renderer = new RazorParser(typeof(EmailClient).Assembly);
-                var body = renderer.UsingTemplateFromEmbedded(template, newAppointmentModel);
+                var body = renderer.UsingTemplateFromEmbedded(template, model);
 
-                return await SendEmailAsync(recipient, $"{newAppointmentModel.TreatmentType} Appointment Details", body);
+                return await SendEmailAsync(recipient, $"A7 Health Appointment Details", body);
             }
             catch (Exception ex)
             {
