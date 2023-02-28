@@ -51,7 +51,7 @@ namespace APlus.DataAccess.Appointments
             try
             {
                 //check if patient has appointment todat alreadt that is booked 
-                if (_context.Appointments.Select(x => x.PatientId == appointment.PatientId && x.Start.Date == appointment.Start.Date && x.AppointmentStatusId == 1).Any())
+                if (_context.Appointments.Any(x => x.PatientId == appointment.PatientId && x.Start.Date == appointment.Start.Date && x.AppointmentStatusId == 1))
                 {
                     throw new InvalidOperationException($"Appointment not booked. Patient has active appointment on {appointment.Start.ToString("dd MMMM yyyy")}");
                 }

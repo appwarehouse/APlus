@@ -89,7 +89,7 @@ namespace APlus.Patient.Booking
             {
                 PatientName = dto.Name,
                 PatientSurname = dto.Surname,
-                BranchName = dto.LocationName,
+                BranchName = location.LocationName,
                 TreatmentSubType = dto.TreatmentType,
                 TreatmentType = dto.Treatment,
                 PractitionerType = dto.PractitionerType.ToString(),

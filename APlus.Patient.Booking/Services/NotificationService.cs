@@ -30,5 +30,18 @@ namespace APlus.Patient.Booking.Services
             var emailSent = await _emailClient.SendEmailToRecipient(recipient, model, assemplyPath );
             return emailSent;
         }
+
+        public async Task<bool> SendEmail(string[] recipient, object model, string modelName, bool showEmailAddresses = false)
+        {
+            var assemplyPath = EmailClient.emailType.newPatientAppointmentNotification;
+
+            if (!string.IsNullOrEmpty(modelName))
+            {
+                assemplyPath = EmailClient.emailType.cancelPatientAppointmentNotification;
+            }
+
+            var emailSent = await _emailClient.SendEmailToRecipients(recipient, model, assemplyPath, showEmailAddresses);
+            return emailSent;
+        }
     }
 }

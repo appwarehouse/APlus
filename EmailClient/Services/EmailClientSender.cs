@@ -5,6 +5,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,6 @@ namespace APlus.EmailClient.Services
             try
             {
                 string template = GetTemplate(emailType);
-                //NewAppointmentNotificationModel newAppointmentModel = model as NewAppointmentNotificationModel;
 
                 RazorParser renderer = new RazorParser(typeof(EmailClient).Assembly);
                 var body = renderer.UsingTemplateFromEmbedded(template, model);
@@ -37,6 +37,24 @@ namespace APlus.EmailClient.Services
                 throw;
             }
         }
+
+        public async Task<bool> SendEmailToRecipients(string[] recipients, object model, emailType emailType, bool showEmails)
+        {
+            try
+            {
+                string template = GetTemplate(emailType);
+
+                RazorParser renderer = new RazorParser(typeof(EmailClient).Assembly);
+                var body = renderer.UsingTemplateFromEmbedded(template, model);
+
+                return await SendEmailAsync(recipients, $"A7 Health Appointment Details", body, showEmails);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
 
         private string GetTemplate(emailType emailType)
         {
@@ -61,7 +79,34 @@ namespace APlus.EmailClient.Services
             var plainTextContent = "";
             var htmlContent = message;
 
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var msg = MailHelper.CreateSingleEmail(from, to , subject, plainTextContent, htmlContent);
+            Response response;
+            try
+            {
+                response = await client.SendEmailAsync(msg);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    return true;
+                return false;
+            }
+            catch (HttpRequestException)
+            {
+                //log error in logger
+                throw;
+            }
+        }
+
+        public async Task<bool> SendEmailAsync(string[] email, string subject, string message, bool showEmailAddressToAll)
+        {
+            var client = new SendGridClient(_emailSettings.ApiKey);
+            var from = new EmailAddress(_emailSettings.From);
+            var to = new List<EmailAddress>();
+            foreach (var emailItem in email) {to.Add(new EmailAddress(emailItem)); }
+           
+            var plainTextContent = "";
+            var htmlContent = message;
+
+            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(from, to, subject, plainTextContent, htmlContent, showEmailAddressToAll);
             Response response;
             try
             {

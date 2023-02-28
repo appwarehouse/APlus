@@ -77,7 +77,12 @@ namespace APlus.Patient.Booking
             services.AddScoped<IPractitionerTypeService, PractitionerTypeService>();
 
             var emailSettings = Configuration.GetSection("EmailSettings");
+            var jwtSettings = Configuration.GetSection("JWT"); 
+            var duplicateAppointmentNotification = Configuration.GetSection("DuplicateAppointmentNotification");
             services.Configure<EmailSettings>(emailSettings);
+            services.Configure<JWT>(jwtSettings);
+            services.Configure<DuplicateAppointmentNotification>(duplicateAppointmentNotification);
+
             services.AddTransient<IEmailClientSender, EmailClientSender>();
 
             //Adding Athentication - JWT

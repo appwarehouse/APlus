@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using APlus.Patient.Booking.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using APlus.EmailClient;
+using APlus.Patient.Booking.Settings;
+using Microsoft.Extensions.Options;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,13 +26,15 @@ namespace APlus.Patient.Booking.Controllers
         private readonly IAppointmentLeadsService _leadsService;
         private readonly IPatientService _patientService;
         private readonly IPractitionerAppointmentService _practitionerAppointmentService;
+        private readonly DuplicateAppointmentNotification _duplicateNotificationSettings;
 
         public PatientAppointmentsController(IAppointmentService patientAppointmentService,
             INotificationService notificationService,
             IBranchesService branchService,
              IAppointmentLeadsService leadsService,
              IPatientService patientService,
-             IPractitionerAppointmentService practitionerAppointmentService)
+             IPractitionerAppointmentService practitionerAppointmentService,
+             IOptions<DuplicateAppointmentNotification> duplicateNotificationSettings)
         {
             _appointmentService = patientAppointmentService;
             _notificationService = notificationService;
@@ -37,6 +42,7 @@ namespace APlus.Patient.Booking.Controllers
             _leadsService = leadsService;
             _patientService = patientService;
             _practitionerAppointmentService = practitionerAppointmentService;
+            _duplicateNotificationSettings = duplicateNotificationSettings.Value;
         }
 
         // GET api/<PatientAppointmentsController>/5
@@ -114,7 +120,15 @@ namespace APlus.Patient.Booking.Controllers
                     //var deleteLead = await _leadsService.DeleteAppointmentLeadAsync(appointmentDto.Id);
 
                     //send email to patient
-                    _ = await _notificationService.SendEmail(appointmentDto.EmailAddress, emailData, "");
+                    if (_duplicateNotificationSettings.SendDuplicate)
+                    {
+                        string[] recipients = { appointmentDto.EmailAddress, _duplicateNotificationSettings.SentDuplicateTo };
+                        _ = await _notificationService.SendEmail(recipients, emailData, "", _duplicateNotificationSettings.ShowAllEmails);
+                    }
+                    else
+                    {
+                        _ = await _notificationService.SendEmail(appointmentDto.EmailAddress, emailData, "");
+                    }
                 }
 
                 return Ok(newAppointment.Id);

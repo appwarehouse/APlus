@@ -10,5 +10,6 @@ namespace APlus.Patient.Booking.Interfaces
     public interface INotificationService
     {
         public Task<bool> SendEmail(string recipient, object model, string modelName);
+        public Task<bool> SendEmail(string[] recipient, object model, string modelName, bool showEmailAddresses = false) ;
     }
 }
