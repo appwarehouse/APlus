@@ -51,7 +51,7 @@ namespace APlus.DataAccess.Appointments
             try
             {
                 //check if patient has appointment todat alreadt that is booked 
-                if (_context.Appointments.Select(x => x.PatientId == appointment.PatientId && x.Start.Date == appointment.Start.Date && x.AppointmentStatusId == 1).Any())
+                if (await _context.Appointments.AnyAsync(x => x.PatientId == appointment.PatientId && x.Start.Date == appointment.Start.Date && x.AppointmentStatusId == 1))
                 {
                     throw new InvalidOperationException($"Appointment not booked. Patient has active appointment on {appointment.Start.ToString("dd MMMM yyyy")}");
                 }
@@ -79,6 +79,7 @@ namespace APlus.DataAccess.Appointments
                                                                        .Include(x => x.TherapistAppointments)
                                                                        .ThenInclude(x => x.Therapist)
                                                                        .ThenInclude(x => x.TherapistType)
+                                                                       .ThenInclude(x => x.TreatmentType)
                                                                        .SingleOrDefaultAsync();
                 return appointment;
             }

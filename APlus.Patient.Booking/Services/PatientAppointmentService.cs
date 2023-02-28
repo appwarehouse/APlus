@@ -58,6 +58,11 @@ namespace APlus.Patient.Booking.Services
                 return appointment;
             return null;
         }
+        public async Task<Appointment> GetPatientAppointment(int id)
+        {
+            var appointment = await _appointments.GetAppointmentAsync(id);
+            return appointment;
+        }
 
         public Task<bool> UpdateAppointmentAsync(int appointmentId, Appointment appointment)
         {

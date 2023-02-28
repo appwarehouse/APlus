@@ -20,6 +20,8 @@ namespace APlus.Patient.Booking.Interfaces
 
         public Task<Appointment> GetPatientAppointment(int patientId, int id);
 
+        public Task<Appointment> GetPatientAppointment(int id);
+
         public Task<List<Appointment>> GetAppointmentsByPractitionerForLocationAsync(int id, int locationId);
 
         public Task<List<Appointment>> GetAppointmentByLocationAndDateRangeAsync(int id, DateTime startDate, DateTime endDate);

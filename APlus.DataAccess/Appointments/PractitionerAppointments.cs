@@ -125,8 +125,8 @@ namespace APlus.DataAccess.Appointments
                 break;}
             }
 
-            return timeRanges.Where(x => !existingSlots.Any(y => y.HasInside(x)))
-                                    .Where(x => !breaks.Any(y => y.HasInside(x)));
+            return timeRanges.Where(x => !existingSlots.Any(y => y.OverlapsWith(x)))
+                                    .Where(x => !breaks.Any(y => y.OverlapsWith(x)));
         }
 
         public async Task<bool> UpdatePractitionerAppointmentAsync(TherapistAppointment appointment)

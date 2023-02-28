@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using APlus.Patient.Booking.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
+using APlus.DataAccess.Appointments;
+using System.Security.Policy;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -140,7 +142,18 @@ namespace APlus.Patient.Booking.Controllers
         public async Task<ActionResult<bool>> CancelPatientAppointment(int appointmentId)
         {
             var response = await _appointmentService.CancelAppointmentAsync(appointmentId);
-            if (response) return Ok(response);
+            if (response)
+            {
+                var url = HttpContext.Request.Headers["origin"];
+                var appointment = await _appointmentService.GetPatientAppointment(appointmentId);
+                var branch = await _branchService.GetBranch(appointment.LocationId);
+                //email patient
+                var emailData = appointment.ToCancellationNotification(branch, url);
+                //send email to patient
+                _ = await _notificationService.SendEmail(appointment.Patient.Email, emailData, "cancellation");
+                return Ok(response);
+            }
+
             return BadRequest(response);
         }
     }
