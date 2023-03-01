@@ -154,7 +154,29 @@ namespace APlus.Patient.Booking.Controllers
         public async Task<ActionResult<bool>> CancelPatientAppointment(int appointmentId)
         {
             var response = await _appointmentService.CancelAppointmentAsync(appointmentId);
-            if (response) return Ok(response);
+            if (response)
+            {
+                var url = HttpContext.Request.Headers["origin"];
+                var appointment = await _appointmentService.GetPatientAppointment(appointmentId);
+                var branch = await _branchService.GetBranch(appointment.LocationId);
+                //email patient
+                var emailData = appointment.ToCancellationNotification(branch, url);
+
+                //send email to patient
+                if (_duplicateNotificationSettings.SendDuplicate)
+                {
+                    string[] recipients = { appointment.Patient.Email, _duplicateNotificationSettings.SentDuplicateTo };
+                    _ = await _notificationService.SendEmail(recipients, emailData, "cancellation", _duplicateNotificationSettings.ShowAllEmails);
+                }
+                else
+                {
+
+                    _ = await _notificationService.SendEmail(appointment.Patient.Email, emailData, "cancellation");
+                }
+                
+                return Ok(response);
+            }
+
             return BadRequest(response);
         }
     }

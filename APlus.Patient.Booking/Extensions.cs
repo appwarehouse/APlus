@@ -102,6 +102,18 @@ namespace APlus.Patient.Booking
                 CancelUrl = $"{baseurl}/cancel-patient-appointment/{appointment.Id}/{appointment.PatientId}"
             };
         }
+        public static CancelAppointmentNotificationModel ToCancellationNotification(this Appointment appointment, Location location, string baseurl)
+        {
+            return new CancelAppointmentNotificationModel
+            {
+                PatientName = appointment.Patient.Name,
+                PatientSurname = appointment.Patient.Surname,
+                BranchName = location.LocationName,
+                //PractitionerType = appointment.TherapistAppointments.ToString(),
+                AppointmentDate = appointment.Start.ToString("dd MMM yyyy"),
+                AppointmentTime = appointment.Start.ToString("HH:mm")
+            };
+        }
 
         public static DataAccess.Models.Patient ToPatient(this PatientAppointmentDto dto, Location location)
         {
