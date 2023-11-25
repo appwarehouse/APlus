@@ -4,14 +4,16 @@ using APlus.DataAccess.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APlus.DataAccess.Migrations
 {
     [DbContext(typeof(PatientContext))]
-    partial class PatientContextModelSnapshot : ModelSnapshot
+    [Migration("20230812195737_RemoveTreatmentTypeIdFromTherapistType")]
+    partial class RemoveTreatmentTypeIdFromTherapistType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1645,7 +1647,10 @@ namespace APlus.DataAccess.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TherapistTypeId")
+                    b.Property<int>("PractitionerTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TherapistTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2369,6 +2374,9 @@ namespace APlus.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("TreatmentTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("TherapistType");
@@ -2416,6 +2424,9 @@ namespace APlus.DataAccess.Migrations
                     b.Property<int>("TherapistTypeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TherapistTypeId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("TreatmentTypeName")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -2423,7 +2434,7 @@ namespace APlus.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TherapistTypeId");
+                    b.HasIndex("TherapistTypeId1");
 
                     b.ToTable("TreatmentType");
                 });
@@ -2930,9 +2941,7 @@ namespace APlus.DataAccess.Migrations
 
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
                         .WithMany()
-                        .HasForeignKey("TherapistTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TherapistTypeId");
 
                     b.Navigation("Location");
 
@@ -3159,10 +3168,8 @@ namespace APlus.DataAccess.Migrations
             modelBuilder.Entity("APlus.DataAccess.Models.TreatmentType", b =>
                 {
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
-                        .WithMany("TreatmentType")
-                        .HasForeignKey("TherapistTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("TherapistTypeId1");
 
                     b.Navigation("TherapistType");
                 });
@@ -3359,8 +3366,6 @@ namespace APlus.DataAccess.Migrations
                     b.Navigation("ProcedureCodes");
 
                     b.Navigation("Therapists");
-
-                    b.Navigation("TreatmentType");
                 });
 
             modelBuilder.Entity("APlus.DataAccess.Models.TreatmentType", b =>

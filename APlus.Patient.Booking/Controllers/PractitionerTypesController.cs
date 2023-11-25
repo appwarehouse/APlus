@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using APlus.Patient.Booking.DTOs;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,7 +35,26 @@ namespace APlus.Patient.Booking.Controllers
                 if (!list.Any())
                     return NoContent();
 
-                return list.OrderBy(c=> c.TherapistTypeName).ToList();
+                return list.OrderBy(c => c.TherapistTypeName).ToList();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"We encountered a problem. {ex.Message}");
+            }
+        }
+
+        [HttpGet("ByLocation", Name = "ByLocation")]
+        public async Task<ActionResult<List<PractitionerTypesLocationDto>>> GetPractitionerTypesByLocation()
+        {
+            try
+            {
+                var list = await _practitionerTypeService.GetLocationsAndPractitionerTypes();
+
+                if (!list.Any())
+                    return NoContent();
+
+                var transformedData =  list.ToPractitionerTypesWithLocation().ToList();
+                return transformedData.Where(x=> x.IsPortalVisible == true).OrderBy(x=> x.TherapistTypeName).ToList();
             }
             catch (Exception ex)
             {

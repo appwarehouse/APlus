@@ -100,5 +100,25 @@ namespace APlus.Patient.Booking.DTOs
         [JsonProperty("programme")]
         [JsonPropertyName("programme")]
         public int Programme { get; set; }
+
+        [JsonProperty("medicalAidProviderName")]
+        [JsonPropertyName("medicalAidProviderName")]
+        public string MedicalAidProviderName { get; set; }
+
+        [JsonProperty("medicalAidProviderId")]
+        [JsonPropertyName("medicalAidProviderId")]
+        public int? MedicalAidProviderId { get; set; }
+
+        [JsonProperty("medicalAidNumber")]
+        [JsonPropertyName("medicalAidNumber")]
+        public string MedicalAidNumber { get; set; }
+
+        [JsonProperty("paymentType")]
+        [JsonPropertyName("paymentType")]
+        public string PaymentType { get; set; }
+
+        [JsonProperty("appointmentNotes")]
+        [JsonPropertyName("appointmentNotes")]
+        public string? AppointmentNotes { get; set; }
     }
 }

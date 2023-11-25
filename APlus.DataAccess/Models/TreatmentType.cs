@@ -9,6 +9,10 @@ namespace APlus.DataAccess.Models
 {
     public class TreatmentType
     {
+        public TreatmentType()
+        {
+            TreatmentTypeLocations = new HashSet<TreatmentTypeLocation>();
+        }
         public int Id { get; set; }
         public string TreatmentTypeName { get; set; }
         public bool? IsActive { get; set; }
@@ -17,7 +21,7 @@ namespace APlus.DataAccess.Models
 
         [DefaultValue(true)]
         public Boolean IsPortalVisible { get; set; }
-
         public virtual TherapistType TherapistType { get; set; }
+        public virtual ICollection<TreatmentTypeLocation> TreatmentTypeLocations { get;}
     }
 }

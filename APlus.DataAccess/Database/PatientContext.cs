@@ -79,13 +79,14 @@ namespace APlus.DataAccess.Database
         public virtual DbSet<VwDocAppointment> VwDocAppointments { get; set; }
         public virtual DbSet<VwPhysioAppointment> VwPhysioAppointments { get; set; }
         public virtual DbSet<TreatmentType> TreatmentType { get; set; }
+        public virtual DbSet<PractitionerTypeLocation> PractitionerTypeLocation { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
                 //ToDo: Send up a warning flare
-                var connString = "Server=.;Database=BackClinic;ConnectRetryCount=0;Trusted_Connection=True;MultipleActiveResultSets=true";
+                var connString = "Server=.;Database=BackClinic_forlive;ConnectRetryCount=0;Trusted_Connection=True;MultipleActiveResultSets=true";
                 optionsBuilder
                     .EnableSensitiveDataLogging(false)
                     .UseSqlServer(connString, options => options.MaxBatchSize(150));
@@ -134,6 +135,16 @@ namespace APlus.DataAccess.Database
                     .HasForeignKey(d => d.PatientId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Appointment_AppointmentStatus");
+            });
+
+            modelBuilder.Entity<PractitionerTypeLocation>(entity => {
+
+                entity.ToTable("PractitionerTypeLocation");
+
+                entity.Property(e => e.IsActive)
+                    .IsRequired()
+                    .HasDefaultValueSql("((1))");
+
             });
 
             modelBuilder.Entity<AppointmentStatus>(entity =>
@@ -1497,13 +1508,35 @@ namespace APlus.DataAccess.Database
                      .IsRequired()
                      .HasDefaultValueSql("((1))");
 
-                entity.HasOne(d => d.TherapistType)
-                    .WithMany(p => p.TreatmentType)
-                    .HasForeignKey(d => d.TherapistTypeId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_TherapistType_TreatmentType");
+                //entity.HasOne(d => d.TherapistType)
+                //    .WithMany(p => p.TreatmentType)
+                //    .HasForeignKey(d => d.TherapistTypeId)
+                //    .OnDelete(DeleteBehavior.ClientSetNull)
+                //    .HasConstraintName("FK_TherapistType_TreatmentType");
+            });
+
+            modelBuilder.Entity<TreatmentTypeLocation>(entity =>
+            {
+                entity.ToTable("TreatmentTypeLocation");
+
+                entity.Property(e => e.Id)
+                .IsRequired(true)
+                .UseIdentityColumn(1, 1);
+
+                entity.Property(e => e.isActive)
+                .IsRequired(true)
+                .HasDefaultValueSql("((1))");
+
+                entity.HasOne(d => d.Location)
+                .WithMany(p => p.TreatmentTypeLocations)
+                .HasForeignKey(d => d.LocationId);
 
 
+                entity.HasOne(d => d.TreatmentType)
+                .WithMany(p => p.TreatmentTypeLocations)
+                .HasForeignKey(d => d.TreatmentTypeId);
+
+                
             });
 
             modelBuilder.Entity<VwBioAppointment>(entity =>

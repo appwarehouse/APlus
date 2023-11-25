@@ -17,6 +17,13 @@ namespace APlus.Patient.Booking.Services
         {
             _practitionerTypes = practitionerTypes;
         }
+
+        public async Task<List<PractitionerTypeLocation>> GetLocationsAndPractitionerTypes()
+        {
+            var patientPortalLocationAndPractitionerTypes = await _practitionerTypes.GetPractitionerTypesAndLocations();
+            return patientPortalLocationAndPractitionerTypes.Where(x => x.IsActive == true).ToList();
+        }
+
         public async Task<List<TherapistType>> GetPractitionerTypes()
         {
             var patientPortalPractitionerTypes = await _practitionerTypes.GetPractitionerTypes();

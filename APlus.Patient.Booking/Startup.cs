@@ -29,6 +29,7 @@ using APlus.Patient.Booking.Settings;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
 
 namespace APlus.Patient.Booking
 {
@@ -44,6 +45,7 @@ namespace APlus.Patient.Booking
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             //Configuration from AppSettings
             services.Configure<JWT>(Configuration.GetSection("JWT"));
 
