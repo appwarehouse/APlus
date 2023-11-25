@@ -10,6 +10,7 @@ namespace APlus.DataAccess.Interfaces
     public interface IPractitionerTypes
     {
         public Task<IEnumerable<TherapistType>> GetPractitionerTypes(bool listOnlyActive = true);
+        public Task<IEnumerable<PractitionerTypeLocation>> GetPractitionerTypesAndLocations(bool listOnlyActive = true);
         public Task<IEnumerable<TherapistType>> GetPractitionerTypesByTreatmentType(int treatmentTypeId, bool listOnlyActive = true);
         public Task<TherapistType> CreatePractitionerType(TherapistType practitionerType);
         public Task<bool> UpdatePractitionerType(TherapistType practitionerType, int therapistTypeId);

@@ -12,7 +12,7 @@ namespace APlus.DataAccess.PatientLeads
 {
     internal class AppointmentLeads : ILeads
     {
-        private PatientContext _context;
+        private readonly PatientContext _context;
 
         public AppointmentLeads(PatientContext context)
         {

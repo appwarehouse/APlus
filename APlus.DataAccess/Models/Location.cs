@@ -15,6 +15,8 @@ namespace APlus.DataAccess.Models
             SchedMeetings = new HashSet<SchedMeeting>();
             SchedTherapistAvailabilitySchedules = new HashSet<SchedTherapistAvailabilitySchedule>();
             TherapistLocations = new HashSet<TherapistLocation>();
+            PractitionerTypeLocations= new HashSet<PractitionerTypeLocation>();
+            TreatmentTypeLocations =  new HashSet<TreatmentTypeLocation>();
         }
 
         public int Id { get; set; }
@@ -37,5 +39,7 @@ namespace APlus.DataAccess.Models
         public virtual ICollection<SchedMeeting> SchedMeetings { get; set; }
         public virtual ICollection<SchedTherapistAvailabilitySchedule> SchedTherapistAvailabilitySchedules { get; set; }
         public virtual ICollection<TherapistLocation> TherapistLocations { get; set; }
+        public virtual ICollection<PractitionerTypeLocation> PractitionerTypeLocations { get; set; }
+        public virtual ICollection<TreatmentTypeLocation> TreatmentTypeLocations { get; set; }
     }
 }

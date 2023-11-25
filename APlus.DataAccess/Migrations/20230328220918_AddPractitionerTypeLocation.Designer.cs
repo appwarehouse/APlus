@@ -4,14 +4,16 @@ using APlus.DataAccess.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APlus.DataAccess.Migrations
 {
     [DbContext(typeof(PatientContext))]
-    partial class PatientContextModelSnapshot : ModelSnapshot
+    [Migration("20230328220918_AddPractitionerTypeLocation")]
+    partial class AddPractitionerTypeLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1645,14 +1647,10 @@ namespace APlus.DataAccess.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TherapistTypeId")
+                    b.Property<int>("PractitionerTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("TherapistTypeId");
 
                     b.ToTable("PractitionerTypeLocation");
                 });
@@ -2369,6 +2367,9 @@ namespace APlus.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("TreatmentTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("TherapistType");
@@ -2426,35 +2427,6 @@ namespace APlus.DataAccess.Migrations
                     b.HasIndex("TherapistTypeId");
 
                     b.ToTable("TreatmentType");
-                });
-
-            modelBuilder.Entity("APlus.DataAccess.Models.TreatmentTypeLocation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
-                        .HasAnnotation("SqlServer:IdentitySeed", 1)
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TreatmentTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("isActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValueSql("((1))");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("TreatmentTypeId");
-
-                    b.ToTable("TreatmentTypeLocation");
                 });
 
             modelBuilder.Entity("APlus.DataAccess.Models.VwBioAppointment", b =>
@@ -2577,6 +2549,21 @@ namespace APlus.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.ToView("vwPhysioAppointments");
+                });
+
+            modelBuilder.Entity("LocationPractitionerTypeLocation", b =>
+                {
+                    b.Property<int>("LocationsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PractitionerTypeLocationsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LocationsId", "PractitionerTypeLocationsId");
+
+                    b.HasIndex("PractitionerTypeLocationsId");
+
+                    b.ToTable("LocationPractitionerTypeLocation");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -2920,25 +2907,6 @@ namespace APlus.DataAccess.Migrations
                     b.Navigation("Programme");
                 });
 
-            modelBuilder.Entity("APlus.DataAccess.Models.PractitionerTypeLocation", b =>
-                {
-                    b.HasOne("APlus.DataAccess.Models.Location", "Location")
-                        .WithMany("PractitionerTypeLocations")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
-                        .WithMany()
-                        .HasForeignKey("TherapistTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("TherapistType");
-                });
-
             modelBuilder.Entity("APlus.DataAccess.Models.ProcedureCode", b =>
                 {
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistTypeNavigation")
@@ -3161,29 +3129,25 @@ namespace APlus.DataAccess.Migrations
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
                         .WithMany("TreatmentType")
                         .HasForeignKey("TherapistTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_TherapistType_TreatmentType")
                         .IsRequired();
 
                     b.Navigation("TherapistType");
                 });
 
-            modelBuilder.Entity("APlus.DataAccess.Models.TreatmentTypeLocation", b =>
+            modelBuilder.Entity("LocationPractitionerTypeLocation", b =>
                 {
-                    b.HasOne("APlus.DataAccess.Models.Location", "Location")
-                        .WithMany("TreatmentTypeLocations")
-                        .HasForeignKey("LocationId")
+                    b.HasOne("APlus.DataAccess.Models.Location", null)
+                        .WithMany()
+                        .HasForeignKey("LocationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("APlus.DataAccess.Models.TreatmentType", "TreatmentType")
-                        .WithMany("TreatmentTypeLocations")
-                        .HasForeignKey("TreatmentTypeId")
+                    b.HasOne("APlus.DataAccess.Models.PractitionerTypeLocation", null)
+                        .WithMany()
+                        .HasForeignKey("PractitionerTypeLocationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("TreatmentType");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -3281,15 +3245,11 @@ namespace APlus.DataAccess.Migrations
 
                     b.Navigation("Patients");
 
-                    b.Navigation("PractitionerTypeLocations");
-
                     b.Navigation("SchedMeetings");
 
                     b.Navigation("SchedTherapistAvailabilitySchedules");
 
                     b.Navigation("TherapistLocations");
-
-                    b.Navigation("TreatmentTypeLocations");
                 });
 
             modelBuilder.Entity("APlus.DataAccess.Models.MedicalAidProvider", b =>
@@ -3361,11 +3321,6 @@ namespace APlus.DataAccess.Migrations
                     b.Navigation("Therapists");
 
                     b.Navigation("TreatmentType");
-                });
-
-            modelBuilder.Entity("APlus.DataAccess.Models.TreatmentType", b =>
-                {
-                    b.Navigation("TreatmentTypeLocations");
                 });
 #pragma warning restore 612, 618
         }

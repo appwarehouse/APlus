@@ -2,6 +2,7 @@
 using APlus.DataAccess.Database;
 using APlus.DataAccess.Interfaces;
 using APlus.DataAccess.Locations;
+using APlus.DataAccess.MedicalAid;
 using APlus.DataAccess.PatientLeads;
 using APlus.DataAccess.PatientTreatmentProgramme;
 using APlus.DataAccess.Practitioners;
@@ -28,6 +29,7 @@ namespace APlus.DataAccess
             services.AddScoped<IPublicHolidays, PublicHoliday>();
             services.AddScoped<IPatientTreatmentProgrammes, PatientTreatmentProgrammes>();
             services.AddScoped<ITreatmentProgramme, TreatmentProgramme>();
+            services.AddScoped<IMedicalAidProvider, MedicalAidProviders>();
 
         }
     }

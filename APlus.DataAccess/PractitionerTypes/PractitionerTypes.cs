@@ -31,9 +31,23 @@ namespace APlus.DataAccess.PractitionerTypes
             return types.Where(q => q.IsActive == true).ToList();
         }
 
+        public async Task<IEnumerable<PractitionerTypeLocation>> GetPractitionerTypesAndLocations(bool listOnlyActive = true)
+        {
+            //var types = await _context.Locations.Include(p => p.PractitionerTypeLocations).ThenInclude(t => t.TherapistType).ToListAsync();
+            //var types = await _context.TherapistTypes.Include(b=> b.TreatmentType).ThenInclude(b => b.TreatmentTypeLocations).ThenInclude(l=> l.Location).ToListAsync();
+
+            var types = await _context.PractitionerTypeLocation.Include(p => p.TherapistType).Include(l=> l.Location).ToListAsync();
+            if (!listOnlyActive) { return types; }
+            return types.Where(q => q.IsActive == true).ToList();
+            //return null;
+        }
+
         public async Task<IEnumerable<TherapistType>> GetPractitionerTypesByTreatmentType(int treatmentTypeId, bool listOnlyActive = true)
         {
-            var types = await _context.TherapistTypes.Where(q => q.TreatmentTypeId == treatmentTypeId).ToListAsync();
+            var types = await _context.TherapistTypes
+                .Include(b => b.TreatmentType)
+                .Where(q => q.TreatmentType.Any(t=> t.Id == treatmentTypeId))
+                .ToListAsync();
 
             if (!listOnlyActive) { return types; }
             return types.Where(q => q.IsActive == true).ToList();

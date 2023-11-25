@@ -9,5 +9,6 @@ namespace APlus.Patient.Booking.Interfaces
     public interface IPractitionerTypeService
     {
         public Task<List<TherapistType>> GetPractitionerTypes();
+        public Task<List<PractitionerTypeLocation>> GetLocationsAndPractitionerTypes();
     }
 }

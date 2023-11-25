@@ -4,14 +4,16 @@ using APlus.DataAccess.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace APlus.DataAccess.Migrations
 {
     [DbContext(typeof(PatientContext))]
-    partial class PatientContextModelSnapshot : ModelSnapshot
+    [Migration("20230812191515_FixPractitionerTypeLocations")]
+    partial class FixPractitionerTypeLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1645,7 +1647,10 @@ namespace APlus.DataAccess.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TherapistTypeId")
+                    b.Property<int>("PractitionerTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TherapistTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -2369,6 +2374,9 @@ namespace APlus.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("TreatmentTypeId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("TherapistType");
@@ -2930,9 +2938,7 @@ namespace APlus.DataAccess.Migrations
 
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
                         .WithMany()
-                        .HasForeignKey("TherapistTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TherapistTypeId");
 
                     b.Navigation("Location");
 
@@ -3161,7 +3167,7 @@ namespace APlus.DataAccess.Migrations
                     b.HasOne("APlus.DataAccess.Models.TherapistType", "TherapistType")
                         .WithMany("TreatmentType")
                         .HasForeignKey("TherapistTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK_TherapistType_TreatmentType")
                         .IsRequired();
 
                     b.Navigation("TherapistType");

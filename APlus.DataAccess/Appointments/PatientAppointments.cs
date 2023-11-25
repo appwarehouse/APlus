@@ -79,7 +79,6 @@ namespace APlus.DataAccess.Appointments
                                                                        .Include(x => x.TherapistAppointments)
                                                                        .ThenInclude(x => x.Therapist)
                                                                        .ThenInclude(x => x.TherapistType)
-                                                                       .ThenInclude(x => x.TreatmentType)
                                                                        .SingleOrDefaultAsync();
                 return appointment;
             }

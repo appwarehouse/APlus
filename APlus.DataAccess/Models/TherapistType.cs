@@ -19,7 +19,6 @@ namespace APlus.DataAccess.Models
         public bool? IsActive { get; set; }
         public int MaxConcurrantAppointments { get; set; }
         public string ShortName { get; set; }
-        public int TreatmentTypeId { get; set; }
 
         [DefaultValue(true)]
         public Boolean IsPortalVisible { get; set; }

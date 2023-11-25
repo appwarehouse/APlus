@@ -26,7 +26,7 @@ namespace APlus.Patient.Booking
                 CreatedBy = "5c4e4edb-5008-4723-b293-4ac67738de46",
                 Deleted = false,
                 AppointmentStatusId = (int)AppointmentStatusEnum.Booked,
-                AppointmentNotes = dto.TreatmentType,
+                AppointmentNotes = $"{dto.TreatmentType} - {dto.AppointmentNotes?.ToString()}",
                 ProgrammeId = dto.Programme
             };
         }
@@ -132,7 +132,10 @@ namespace APlus.Patient.Booking
                 Idnumber = dto.IdType.ToLower() == "id" ? dto.IdNumber : dto.PassportNumber,
                 Mobile = dto.MobileNumber,
                 Email = dto.EmailAddress,
-                Title= string.Empty
+                Title= string.Empty,
+                MedicalAidId = dto.MedicalAidProviderId,
+                MedicalAidNumber = dto.MedicalAidNumber,
+                MedicalAidOptionName = dto.MedicalAidProviderName              
 
             };
         }
@@ -152,6 +155,27 @@ namespace APlus.Patient.Booking
             slotTimeRange.ToList().ForEach(x =>
             {
                 list.Add(x.ToAvaiableSlot());
+
+            });
+            return list;
+        }
+
+        public static IEnumerable<PractitionerTypesLocationDto> ToPractitionerTypesWithLocation(this IEnumerable<PractitionerTypeLocation> types)
+        {
+            var list = new List<PractitionerTypesLocationDto>();
+            types.ToList().ForEach(x =>
+            {
+                var item = new PractitionerTypesLocationDto();
+                item.Id = x.Id;
+                item.TherapistTypeName = x.TherapistType.TherapistTypeName;
+                item.TherapistTypeId = x.TherapistTypeId;
+                item.IsActive = x.TherapistType.IsActive;
+                item.IsPortalVisible = x.TherapistType.IsPortalVisible;
+                item.MaxConcurrantAppointments = x.TherapistType.MaxConcurrantAppointments;
+                item.ShortName = x.TherapistType.ShortName;
+                item.LocationName = x.Location?.LocationName;
+                item.LocationId = x.LocationId;
+                list.Add(item);
 
             });
             return list;
